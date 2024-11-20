@@ -10,6 +10,11 @@ const ProductPage = () => {
 
     const [products, setProducts] = useState([]);
     const [productsCopy, setProductsCopy] = useState([]);
+    const [allCateogary, setallCateogary] = useState([]);
+
+    function addToCart() {
+
+    }
 
     const Item = styled('div')(({ theme }) => ({
         backgroundColor: '#fff',
@@ -26,21 +31,22 @@ const ProductPage = () => {
 
     useEffect(() => {
         let productsToDisplay = [];
-        axios.get('https://dummyjson.com/products').then((res) => {
-            let allProducts = res.data.products;
+        axios.get('https://fakestoreapi.com/products').then((res) => {
+            let allProducts = res.data;
+            console.log(allProducts);
 
 
             for (let i = 0; i < allProducts.length; i++) {
                 let product = allProducts[i];
-                let image = product.images[0];
+                let image = product.image;
 
                 let requiredProductDetails = {
                     id: product.id,
-                    title: product.title,
+                    title: product.title.split(' ').slice(0, 5).join(' '),
                     price: product.price,
                     description: product.description,
                     image: image,
-                    displayImage: product.images[1]
+                    displayImage: product.image
                 }
 
                 // setProducts([...products, requiredProductDetails]);
@@ -59,7 +65,27 @@ const ProductPage = () => {
             setProductsCopy(productsToDisplay);
             console.log(products);
         })
+
+        axios.get('https://fakestoreapi.com/products/categories').then((res) => {
+            console.log(res.data);
+            setallCateogary(res.data);
+        }).catch((err) => {
+            console.log(err);
+        })
     }, [])
+
+    function getProductByCateogary(cateogary) {
+        if (cateogary == 'all') {
+            setProducts(productsCopy);
+            return;
+        }
+        axios.get('https://fakestoreapi.com/products/category/' + cateogary).then((res) => {
+            console.log(res.data);
+            setProducts(res.data);
+        }).catch((err) => {
+            console.log(err);
+        })
+    }
     return (
         <>
             <HeaderComponent />
@@ -72,8 +98,22 @@ const ProductPage = () => {
                     })
                     setProducts(filteredProducts);
                 }} type="text" className="w-1/2 rounded-lg h-full pl-5 border border-black" placeholder="Search here" />
+                <select name="cateogaries" id="cateogary" className="border border-black rounded-lg px-2 py-1 text-left font-semibold" onChange={(e) => {
+                    console.log(e.target.value);
+
+                    getProductByCateogary(e.target.value);
+                }}>
+                    <option value="all">All</option>
+                    {
+                        allCateogary.map((cateogary) => {
+                            return <option value={cateogary} key={cateogary}>{cateogary}</option>
+                        })
+                    }
+                </select>
                 <button className="bg-teal-800 font-medium px-3 p-1 text-white rounded-lg" onClick={() => {
                     setProducts(productsCopy);
+                    let ele = document.getElementById('cateogary');
+                    ele.value = 'all';
                 }}>Reset</button>
             </div>
             <Box sx={{ width: '100%' }}>
@@ -83,10 +123,13 @@ const ProductPage = () => {
                             <Item className="">
                                 <div className="flex flex-col gap-y-3 ">
                                     <div className="flex flex-row  justify-center">
-                                        <img className="w-[5rem]" src={product?.image} alt="" />
+                                        <img className="w-[5rem] h-[5rem]" src={product?.image} alt="" />
                                     </div>
                                     <p className="text-lg  text-left">{product.title}</p>
                                     <p className="text-left">{product.price}</p>
+                                    <div className="flex flex-row justify-center">
+                                        <button className="border w-1/3  rounded-lg shadow-md bg-teal-900 text-white" onClick={addToCart}>Add to Cart</button>
+                                    </div>
                                 </div>
                             </Item>
                         </Grid2>

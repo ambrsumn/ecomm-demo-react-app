@@ -33,7 +33,7 @@ const HeaderComponent = () => {
 
                 {user ? <button onClick={() => {
                     setUser(null)
-                }}>Logout</button> : <button onClick={handleOpenLogin}>Login</button>}
+                }}>{user.userName}</button> : <button onClick={handleOpenLogin}>Login</button>}
 
                 <Dialog open={openLogin} onClose={handleCloseLogin}>
                     <DialogActions className="text-red-600 !important" sx={{ color: "red" }}>
