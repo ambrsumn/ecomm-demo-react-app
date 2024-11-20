@@ -4,11 +4,12 @@ import { Dialog, DialogContent, DialogActions, Button } from "@mui/material";
 import { useState } from 'react';
 import LoginPage from '../pages/LoginPage';
 import { UserContext } from '../contexts/userContexts';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
 
 
 const HeaderComponent = () => {
 
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [openLogin, setOpenLogin] = useState(false);
     const { user, setUser } = React.useContext(UserContext);
 
@@ -32,8 +33,12 @@ const HeaderComponent = () => {
                 <a href="/products">Products</a>
 
                 {user ? <button onClick={() => {
-                    setUser(null)
-                }}>{user.userName}</button> : <button onClick={handleOpenLogin}>Login</button>}
+                    setUser(null);
+                    window.location.href = "/products";
+                }}>Logout</button> : <button onClick={handleOpenLogin}>Login</button>}
+                {
+                    user ? <a href="/cart"><FontAwesomeIcon icon={faCartShopping} /></a> : null
+                }
 
                 <Dialog open={openLogin} onClose={handleCloseLogin}>
                     <DialogActions className="text-red-600 !important" sx={{ color: "red" }}>

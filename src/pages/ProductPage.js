@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { experimentalStyled as styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
 import { Grid2 } from '@mui/material';
 import HeaderComponent from '../components/HeaderComponent';
 import axios from 'axios';
+import { useContext } from 'react';
+import { UserContext } from '../contexts/userContexts';
 
 const ProductPage = () => {
 
     const [products, setProducts] = useState([]);
     const [productsCopy, setProductsCopy] = useState([]);
     const [allCateogary, setallCateogary] = useState([]);
+    const userContext = useContext(UserContext);
 
-    function addToCart() {
+    function addProductToCart(product) {
+        console.log(product);
+        userContext.addToCart(product);
 
     }
 
@@ -89,7 +93,7 @@ const ProductPage = () => {
     return (
         <>
             <HeaderComponent />
-            <div className="h-[5vh] my-4 flex flex-row gap-x-4">
+            <div className="h-[5vh] my-4 flex flex-col sm:flex-row  gap-y-2 sm:gap-x-4 mb-6">
                 <input onChange={(e) => {
                     let allProducts = productsCopy;
                     let searchText = e.target.value;
@@ -128,7 +132,11 @@ const ProductPage = () => {
                                     <p className="text-lg  text-left">{product.title}</p>
                                     <p className="text-left">{product.price}</p>
                                     <div className="flex flex-row justify-center">
-                                        <button className="border w-1/3  rounded-lg shadow-md bg-teal-900 text-white" onClick={addToCart}>Add to Cart</button>
+                                        {userContext.cart.find((cartProduct) => cartProduct.id === product.id) ? <button className="bg-red-500 px-3 py-1 rounded-lg text-white" onClick={() => {
+                                            userContext.removeFromCart(product.id);
+                                        }}>Remove from Cart</button> : <button className="bg-green-500 px-3 py-1 rounded-lg text-white" onClick={() => {
+                                            addProductToCart(product);
+                                        }}>Add to Cart</button>}
                                     </div>
                                 </div>
                             </Item>
